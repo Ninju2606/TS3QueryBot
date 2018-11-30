@@ -33,6 +33,7 @@ public class Event {
 	static HashMap<Integer, Long> icons = new HashMap<>();
 
 	public static void loadEvents() {
+		Utils.loadChannels();
 		Load.api.registerAllEvents();
 		Load.api.addTS3Listeners(new TS3Listener() {
 			
@@ -72,6 +73,7 @@ public class Event {
 			@Override
 			public void onClientMoved(ClientMovedEvent e) {
 				Client c = Load.api.getClientInfo(e.getClientId());
+				Utils.deleteChannel();
 				ChannelHistory history = Load.clientChannelHistory.get(c.getId());
 				history.addChannel();
 				if(history.isChannelhopping() == 2) {
@@ -92,6 +94,9 @@ public class Event {
 						Load.api.sendPrivateMessage(c.getId(), "Es sind momentan keine Supporter online!");
 					}
 				}
+				if(e.getTargetChannelId() == 9 || e.getTargetChannelId() == 10) {
+					Utils.createChannel(c, Load.api.getChannelInfo(c.getChannelId()).getName());
+				}
 				
 			}
 			
@@ -108,6 +113,7 @@ public class Event {
 				Load.api.editServer(property);
 				Load.api.deleteIcon(icons.get(id));
 				icons.remove(id);
+				Utils.deleteChannel();
 			}
 			
 			@Override

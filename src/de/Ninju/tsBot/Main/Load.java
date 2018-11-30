@@ -27,14 +27,14 @@ public class Load {
 	public static HashMap<Integer, ChannelHistory> clientChannelHistory = new HashMap<>();
 
 	public static void main(String[] args) {
-		config.setHost("YOUR IP");
+		config.setHost("localhost");
 		config.setFloodRate(FloodRate.UNLIMITED);
 		config.setDebugLevel(Level.ALL);
 		query = new TS3Query(config);
 		query.connect();
 		api = new TS3Api(query);
-		api.login("QUERYNAME", "PASSWORD");
-		api.selectVirtualServerByPort(9987); //9987 ist Standatd
+		api.login("Login", "kkvw2Gd6");
+		api.selectVirtualServerByPort(9987); //9987 ist Standard
 		api.setNickname("TS3 Querybot - Video");
 		Event.loadEvents();
 		updateSupport();

@@ -9,7 +9,6 @@ public class ChannelHistory {
 	}
 	
 	public void addChannel() {
-		System.out.println(channels);
 		channels++;
 	}
 	

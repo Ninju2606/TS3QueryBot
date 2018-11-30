@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.theholywaffle.teamspeak3.api.ChannelProperty;
+import com.github.theholywaffle.teamspeak3.api.wrapper.Channel;
 import com.github.theholywaffle.teamspeak3.api.wrapper.ChannelInfo;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 
@@ -50,6 +51,24 @@ public class Utils {
 			}
 		}
 		return i;
+	}
+	
+	public static void deleteChannel() {
+		
+		ChannelInfo ci = null;
+		for(String game : channels.keySet()) {
+			for(ChannelInfo info : channels.get(game)) {
+				Channel ch = Load.api.getChannelByNameExact(info.getName(), true);
+				if(ch.getTotalClients() == 0) {
+					ci = info;
+				}
+			}
+		}
+		if(ci != null) {
+			String name = ci.getName().replace("» ", "").split(" • ")[0].toLowerCase();
+			channels.get(name).remove(ci);
+			Load.api.deleteChannel(ci.getId());
+		}
 	}
 
 }
