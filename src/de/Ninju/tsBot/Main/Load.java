@@ -33,8 +33,8 @@ public class Load {
 		query = new TS3Query(config);
 		query.connect();
 		api = new TS3Api(query);
-		ApiLogin.apiLogin();
-		api.selectVirtualServerByPort(9987);
+		api.login("QUERYNAME", "PASSWORD");
+		api.selectVirtualServerByPort(9987); //9987 ist Standatd
 		api.setNickname("TS3 Querybot - Video");
 		Event.loadEvents();
 		updateSupport();
