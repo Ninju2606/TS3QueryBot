@@ -82,17 +82,7 @@ public class Event {
 					Load.api.banClient(c.getId(), 30*60, "Autoban: Channelhopping");
 				}
 				if(e.getTargetChannelId() == 5) {
-					boolean value = false;
-					for(Client sup : Load.api.getClients()) {
-						if(sup.isInServerGroup(9)) {
-							value =true;
-							Load.api.sendPrivateMessage(sup.getId(), "[URL=client://" + c.getChannelId() + "/" + c.getUniqueIdentifier() + "~"+c.getNickname()+"]" + c.getNickname() + "[/URL] braucht Support!");
-						}
-					}if(value) {
-						Load.api.sendPrivateMessage(c.getId(), "Es wurden Supporter benachrichtigt, dass du Support brauchst!");
-					}else {
-						Load.api.sendPrivateMessage(c.getId(), "Es sind momentan keine Supporter online!");
-					}
+					Utils.support(c);
 				}
 				if(e.getTargetChannelId() == 9 || e.getTargetChannelId() == 10) {
 					Utils.createChannel(c, Load.api.getChannelInfo(c.getChannelId()).getName());
