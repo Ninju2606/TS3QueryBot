@@ -104,8 +104,8 @@ public class Utils {
 				var = true;
 			}
 			ChannelInfo ci = Load.api.getChannelInfo(Load.api.createChannel("» Support • "+c.getNickname(), property));
-			Load.api.addChannelPermission(c.getId(), "i_channel_needed_join_power", 35);
-			Load.api.addChannelPermission(c.getId(), "i_channel_needed_delete_power", 75);
+			Load.api.addChannelPermission(ci.getId(), "i_channel_needed_join_power", 35);
+			Load.api.addChannelPermission(ci.getId(), "i_channel_needed_delete_power", 75);
 			Load.api.moveClient(c.getId(), ci.getId());
 			if(!var) {
 				sChannels.add(ci.getName());
