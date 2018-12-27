@@ -5,7 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.github.theholywaffle.teamspeak3.api.VirtualServerProperty;
@@ -26,21 +28,23 @@ import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 
 import de.Ninju.tsBot.Main.ChannelHistory;
 import de.Ninju.tsBot.Main.Load;
+import de.Ninju.tsBot.Main.MySQL;
 
 
 public class Event {
-	
+
 	static HashMap<Integer, Long> icons = new HashMap<>();
 
 	public static void loadEvents() {
 		Utils.loadChannels();
 		Load.api.registerAllEvents();
 		Load.api.addTS3Listeners(new TS3Listener() {
-			
-			
+
+
 			@Override
 			public void onTextMessage(TextMessageEvent e) {
 				Client c = Load.api.getClientInfo(e.getInvokerId());
+				String[] args = e.getMessage().split(" ");
 				if(e.getMessage().equalsIgnoreCase("!nopoke")) {
 					if(c.isInServerGroup(10)) {
 						Load.api.removeClientFromServerGroup(10, c.getDatabaseId());
@@ -55,21 +59,45 @@ public class Event {
 						Load.api.addClientToServerGroup(11, c.getDatabaseId());
 					}
 				}
-				
+				if(args[0].equalsIgnoreCase("!link")) {
+					if(args.length == 1) {
+						Load.api.sendPrivateMessage(c.getId(), "Du kannst folgende Spiele verlinken: Minecraft, Fortnite.");
+					}if(args.length == 2) {
+						Load.api.sendPrivateMessage(c.getId(), "Bitte gib deinen Ingame-Namen an.");
+					}if(args.length == 3) {
+						List<String> games = Arrays.asList("fortnite", "minecraft");
+						if(games.contains(args[1].toLowerCase())) {
+							MySQL.addGamegroup(c.getUniqueIdentifier(), args[1].toLowerCase(), args[2]);
+							if(!c.isInServerGroup(getGroupId(args[1].toLowerCase()))) {
+								Load.api.addClientToServerGroup(getGroupId(args[1].toLowerCase()), c.getDatabaseId());
+							}else {
+								Load.api.sendPrivateMessage(c.getId(), "Dein Name im Spiel " + args[1] + " wurde aktualisiert");
+							}
+						}else {
+							Load.api.sendPrivateMessage(c.getId(), "Du kannst folgende Spiele verlinken: Minecraft, Fortnite.");
+						}
+					}
+				}
+				if(args[0].equalsIgnoreCase("!unlink")) {
+
+				}
+				if(args[0].equalsIgnoreCase("!info")) {
+
+				}
 			}
-			
+
 			@Override
 			public void onServerEdit(ServerEditedEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void onPrivilegeKeyUsed(PrivilegeKeyUsedEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void onClientMoved(ClientMovedEvent e) {
 				Client c = Load.api.getClientInfo(e.getClientId());
@@ -87,9 +115,9 @@ public class Event {
 				if(e.getTargetChannelId() == 9 || e.getTargetChannelId() == 10) {
 					Utils.createChannel(c, Load.api.getChannelInfo(c.getChannelId()).getName());
 				}
-				
+
 			}
-			
+
 			@Override
 			public void onClientLeave(ClientLeaveEvent e) {
 				Load.afkMover();
@@ -99,13 +127,13 @@ public class Event {
 				}
 				Map<VirtualServerProperty, String> property = new HashMap<VirtualServerProperty, String>();
 				property.put(VirtualServerProperty.VIRTUALSERVER_NAME, "Ninju Test Server ("+Load.api.getClients().size()+"/"
-				        +Load.api.getServerInfo().getMaxClients()+")");
+						+Load.api.getServerInfo().getMaxClients()+")");
 				Load.api.editServer(property);
 				Load.api.deleteIcon(icons.get(id));
 				icons.remove(id);
 				Utils.deleteChannel();
 			}
-			
+
 			@Override
 			public void onClientJoin(ClientJoinEvent e) {
 				Load.afkMover();
@@ -117,7 +145,7 @@ public class Event {
 				Load.clientChannelHistory.put(c.getId(), new ChannelHistory());
 				Map<VirtualServerProperty, String> property = new HashMap<VirtualServerProperty, String>();
 				property.put(VirtualServerProperty.VIRTUALSERVER_NAME, "Ninju Test Server ("+Load.api.getClients().size()+"/"
-				        +Load.api.getServerInfo().getMaxClients()+")");
+						+Load.api.getServerInfo().getMaxClients()+")");
 				Load.api.editServer(property);
 				if(!c.isServerQueryClient()) {
 					try {
@@ -137,43 +165,52 @@ public class Event {
 						icons.put(c.getId(), iconID);
 					}catch(IOException e1) {}
 				}
+				MySQL.register(c.getUniqueIdentifier());
 			}
-			
+
 			@Override
 			public void onChannelPasswordChanged(ChannelPasswordChangedEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void onChannelMoved(ChannelMovedEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void onChannelEdit(ChannelEditedEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void onChannelDescriptionChanged(ChannelDescriptionEditedEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void onChannelDeleted(ChannelDeletedEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void onChannelCreate(ChannelCreateEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
+	}
+	
+	private static int getGroupId(String game) {
+		switch(game) {
+		case "minecraft" : return 1;
+		case "fortnite" : return 2;
+		default : return 0;
+		}
 	}
 }
